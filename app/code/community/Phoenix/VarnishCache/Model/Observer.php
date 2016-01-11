@@ -1,9 +1,9 @@
 <?php
 /**
  * PageCache powered by Varnish
- * 
+ *
  * NOTICE OF LICENSE
- * 
+ *
  * This source file is subject to the Open Software License (OSL 3.0)
  * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
@@ -11,7 +11,7 @@
  * If you did not receive a copy of the license and are unable to
  * obtain it through the world-wide-web, please send an email
  * to support@phoenix-media.eu so we can send you a copy immediately.
- * 
+ *
  * @category   Phoenix
  * @package    Phoenix_VarnishCache
  * @copyright  Copyright (c) 2011-2014 PHOENIX MEDIA GmbH (http://www.phoenix-media.eu)
@@ -299,7 +299,7 @@ class Phoenix_VarnishCache_Model_Observer
              */
             $exception = new Zend_Controller_Response_Exception;
             unset($exception);
-            
+
             // register shutdown method
             register_shutdown_function(array($this->_getCacheHelper(), 'setCacheControlHeadersRaw'));
         }
@@ -321,13 +321,15 @@ class Phoenix_VarnishCache_Model_Observer
                 )
             );
 
-            $designExceptionSubSnippet = Mage::getSingleton('varnishcache/vcl')
-                ->generateDesignExceptionSub();
+            if ($designExceptionSubSnippet = Mage::getSingleton('varnishcache/vcl')) {
+                $designExceptionSubSnippet->generateDesignExceptionSub();
 
-            $designExceptionSubSnippet = str_replace(' ', '&nbsp;', $designExceptionSubSnippet);
-            $designExceptionSubSnippet = nl2br($designExceptionSubSnippet);
+                $designExceptionSubSnippet = str_replace(' ', '&nbsp;', $designExceptionSubSnippet);
+                $designExceptionSubSnippet = nl2br($designExceptionSubSnippet);
 
-            Mage::getSingleton('core/session')->addNotice($designExceptionSubSnippet);
+                Mage::getSingleton('core/session')->addNotice($designExceptionSubSnippet);
+            }
+
         } catch (Exception $e) {
             $msg = 'Failed to prepare vcl: '.$e->getMessage();
             Mage::helper('varnishcache')->debug($msg);
